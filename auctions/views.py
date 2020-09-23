@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listings, Comments
+from .models import User
 
 
 def index(request):
@@ -67,13 +67,13 @@ def listing(request):
         name = request.POST["name"]
         price = request.POST["price"]       
         description = request.POST["description"]
+        url = request.POST["url"]
         date = request.POST["date"]
         try:
-            Listings_created = Listings.objects.create(name, price, description, date)
+            Listings_created = Listings.objects.create(name, price, description, url, date)
             Listings_created.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
                 "message": "Username already taken."
             })        
-    return render(request, "auctions/listing.html")  
-
+    return render(request, "auctions/listing.html")
