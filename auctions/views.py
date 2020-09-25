@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listings
+from .models import User, Listing
 
 
 def index(request):
@@ -68,9 +68,8 @@ def listing(request):
         price = request.POST["price"]       
         description = request.POST["description"]
         url = request.POST["url"]
-        date = request.POST["date"]
         try:
-            Listings_created = Listings(name=name, price=price, description=description, url=url, date=date)
+            Listings_created = Listing(name=name, price=price, description=description, url=url)
             Listings_created.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
