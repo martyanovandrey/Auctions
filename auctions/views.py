@@ -8,7 +8,9 @@ from .models import User, Listing
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    all_listings = Listing.objects.all()
+    return render(request, "auctions/index.html", {
+                    "listings": all_listings})
 
 
 def login_view(request):
@@ -71,6 +73,7 @@ def listing(request):
         try:
             Listings_created = Listing(name=name, price=price, description=description, url=url)
             Listings_created.save()
+            return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
             return render(request, "auctions/register.html", {
                 "message": "Username already taken."
