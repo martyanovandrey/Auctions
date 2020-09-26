@@ -79,3 +79,21 @@ def listing(request):
                 "message": "Username already taken."
             })        
     return render(request, "auctions/listing.html")
+
+def active_listing(request, listing_id):
+    try:
+        listing = Listing.objects.get(id=listing_id)
+    except Listing.DoesNotExist:
+        raise Http404("Listing not found.")
+    return render(request, "auctions/active_listing.html", {
+        "listing": listing
+        })
+
+def watchlist(request):
+    try:
+        listing = Listing.objects.get(id=listing_id)
+    except Listing.DoesNotExist:
+        raise Http404("Listing not found.")
+    return render(request, "auctions/active_listing.html", {
+        "listing": listing
+        })        

@@ -1,13 +1,22 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
-    <ul>
-        {% for listing in listings %}
-            <li>
-                Flight {{ listing.name}}: {{ listing.price }}$ {{ listing.description }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+<h2>Active Listings</h2>
+<ul>
+    {% for listing in listings %}
+    <div onclick="window.open('{% url "listing" listing.id %}');" class="listing">
+        <div>
+            <h3>
+                Listing: {{ listing.name}}:
+            </h3>
+            <img src="{{ listing.url}}">
+        </div>
+        <div>
+            <h3> ____</h3>
+            <p>Description:{{ listing.description }}</p>
+            <p>Price: {{ listing.price }}$</p>
+        </div>
+    </div>
+    {% endfor %}
+</ul>
 {% endblock %}

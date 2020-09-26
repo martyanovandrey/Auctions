@@ -1,3 +1,20 @@
 body {
     padding: 10px;
 }
+
+img {
+    width: 320px;
+}
+
+.active_listing {
+    display: flex;
+    flex-direction: column;
+}
+
+.listing {
+    display: flex;
+    flex-direction: row;    
+    margin: 10px;
+    border: 1px solid grey;
+    cursor: pointer;
+}
