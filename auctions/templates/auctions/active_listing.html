@@ -9,5 +9,9 @@
     </ul>
 
     <img src="{{ listing.url}}">
+    <form action="{% url 'watchlist' %}" method = 'post'>
+        {% csrf_token %}
+        <input type="submit" name="listing_id" value='{{ listing.id }}'/>
+    </form>    
 </div>
 {% endblock %}

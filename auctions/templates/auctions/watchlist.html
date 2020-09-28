@@ -1,22 +1,5 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<div class="active_listing">
-    <ul>
-        Listing {{ listing.name}}:
-        <li>{{ listing.price }}$</li>
-        <li>{{ listing.description }} </li>
-    </ul>
-
-    <img src="{{ listing.url}}">
-    <form action="{% url 'watchlist' listing.id %}" method="post">
-        {% csrf_token %}
-        <select name="listing">
-            {% for passenger in non_passengers %}
-                <option value="{{ passenger.id }}">{{ passenger }}</option>
-            {% endfor %}
-        </select>
-        <input type="submit">
-    </form> 
-</div>
+{{ listing }}
 {% endblock %}

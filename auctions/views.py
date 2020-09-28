@@ -90,10 +90,10 @@ def active_listing(request, listing_id):
         })
 
 def watchlist(request):
-    try:
-        listing = Listing.objects.get(id=listing_id)
-    except Listing.DoesNotExist:
-        raise Http404("Listing not found.")
-    return render(request, "auctions/active_listing.html", {
-        "listing": listing
-        })        
+    if request.method == "POST":
+
+        # Attempt to sign user in
+        listing_id = request.POST["listing_id"]    
+    return render(request, "auctions/watchlist.html", {
+        "listing": listing_id
+        })     
