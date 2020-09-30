@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Listing
+from .models import User, Listing, Watchlist
 
 
 def index(request):
@@ -91,9 +91,11 @@ def active_listing(request, listing_id):
 
 def watchlist(request):
     if request.method == "POST":
-
-        # Attempt to sign user in
-        listing_id = request.POST["listing_id"]    
+        listing_id = request.POST["listing_id"]
+        curent_user = request.user.username
+        watchlist = Watchlist(user=curent_user, listing_id=listing_id)
+        watchlist.save()
+        all_watchlists = Watchlist.objects.all()
     return render(request, "auctions/watchlist.html", {
-        "listing": listing_id
+        "all_watchlists": all_watchlists
         })     
