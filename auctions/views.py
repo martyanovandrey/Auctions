@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -90,12 +90,15 @@ def active_listing(request, listing_id):
         })
 
 def watchlist(request):
+    curent_user = request.user.id    
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
-        curent_user = request.user.username
         watchlist = Watchlist(user=curent_user, listing_id=listing_id)
+        if Watchlist.objects.filter(user=curent_user, listing_id = listing_id).exists():
+            return HttpResponseBadRequest("This item already in your watchlist")
         watchlist.save()
-        all_watchlists = Watchlist.objects.all()
+    all_watchlists = Watchlist.objects.all()
+    curent_watchlist = Watchlist.objects.filter(user=curent_user)
     return render(request, "auctions/watchlist.html", {
-        "all_watchlists": all_watchlists
-        })     
+        "all_watchlists": curent_watchlist
+        })
