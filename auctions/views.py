@@ -97,8 +97,9 @@ def watchlist(request):
         if Watchlist.objects.filter(user=curent_user, listing_id = listing_id).exists():
             return HttpResponseBadRequest("This item already in your watchlist")
         watchlist.save()
-    all_watchlists = Watchlist.objects.all()
     curent_watchlist = Watchlist.objects.filter(user=curent_user)
+    curent_watch_id = curent_watchlist.objects.filter(listing_id=listing_id)
+    watch_listing = Listing.objects.filter(id = curent_watch_id)
     return render(request, "auctions/watchlist.html", {
-        "all_watchlists": curent_watchlist
+        "all_watchlists": watch_listing
         })
