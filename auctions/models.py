@@ -22,6 +22,8 @@ class Listing(models.Model):
     url = models.CharField(max_length=254)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     watchlist = models.ForeignKey(Watchlist , on_delete=models.CASCADE, blank=True, null=True)
+    watch_related = models.ManyToManyField('Watchlist', related_name='watchlist_realted')
+
 
     def __str__(self):
         return f"{self.name} ({self.price}) {self.description} {self.url} {self.date}"    

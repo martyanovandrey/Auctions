@@ -99,7 +99,7 @@ def watchlist(request):
         watchlist.save()
     curent_watchlist = Watchlist.objects.filter(user=curent_user)
     curent_watch_id = curent_watchlist.objects.filter(listing_id=listing_id)
-    watch_listing = Listing.objects.filter(id = curent_watch_id)
+    watch_listing = Listing.objects.filter(id = listing_id)
     return render(request, "auctions/watchlist.html", {
         "all_watchlists": watch_listing
         })
