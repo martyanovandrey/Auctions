@@ -90,16 +90,21 @@ def active_listing(request, listing_id):
         })
 
 def watchlist(request):
-    curent_user = request.user.id    
+    curent_user = request.user.id
+    #listing_id = request.POST["listing_id"]        
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
         watchlist = Watchlist(user=curent_user, listing_id=listing_id)
         if Watchlist.objects.filter(user=curent_user, listing_id = listing_id).exists():
             return HttpResponseBadRequest("This item already in your watchlist")
         watchlist.save()
-    curent_watchlist = Watchlist.objects.filter(user=curent_user)
-    curent_watch_id = curent_watchlist.objects.filter(listing_id=listing_id)
-    watch_listing = Listing.objects.filter(id = listing_id)
+    #Search in watchlist what items user have
+    #curent_watchlist = Watchlist.objects.filter(user=curent_user)
+
+    curent_watch_id = Watchlist.objects.get(id=curent_user)
+    curent_watchlist = curent_watch_id.listing_set.all()
+    #for w in curent_watch_id.listing_id:
+       # watch_listing = Listing.objects.filter(id = w)
     return render(request, "auctions/watchlist.html", {
-        "all_watchlists": watch_listing
+        "all_watchlists": curent_watchlist
         })

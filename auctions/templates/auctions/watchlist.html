@@ -3,5 +3,9 @@
 {% block body %}
 {{ all_watchlists }}
 
+{% for w in all_watchlists %}
+    <h3>{{ w }}</h3>
+{% endfor %}
+
 
 {% endblock %}
