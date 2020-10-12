@@ -1,11 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-{{ all_watchlists }}
 
-{% for w in all_watchlists %}
-    <h3>{{ w }}</h3>
-{% endfor %}
+<ol reversed>
+    {% for w in all_watchlists %}
 
+    <li>{{ w.listing_item }}</li>
+
+    {% endfor %}
+</ol>
 
 {% endblock %}

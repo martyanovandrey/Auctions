@@ -2,9 +2,6 @@ body {
     padding: 10px;
 }
 
-img {
-    width: 320px;
-}
 
 .active_listing {
     display: flex;

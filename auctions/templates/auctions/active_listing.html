@@ -3,15 +3,15 @@
 {% block body %}
 <div class="active_listing">
     <ul>
-        Listing {{ listing.name}}:
+        {{ listing.name}}
         <li>{{ listing.price }}$</li>
         <li>{{ listing.description }} </li>
     </ul>
 
-    <img src="{{ listing.url}}">
+    <img src="{{ listing.url}}" class="card-img-top" >
     <form action="{% url 'watchlist' %}" method = 'post'>
         {% csrf_token %}
-        <input type="submit" name="listing_id" value='{{ listing.id }}'/>
+        <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-success">Add to Watchlist</button>
     </form>    
 </div>
 {% endblock %}
