@@ -8,10 +8,19 @@
         <li>{{ listing.description }} </li>
     </ul>
 
-    <img src="{{ listing.url}}" class="card-img-top" >
-    <form action="{% url 'watchlist' %}" method = 'post'>
-        {% csrf_token %}
-        <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-success">Add to Watchlist</button>
-    </form>    
+    <img src="{{ listing.url}}" class="card-img-full" >
 </div>
+        <div>
+            {% if watchlist_state %}
+                <form action="{% url 'watchlist' %}" method = 'post'>
+                    {% csrf_token %}
+                    <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-success">Add to Watchlist</button>
+                </form>   
+            {% else %}
+                <form action="{% url 'watchlist' %}" method = 'post'>
+                    {% csrf_token %}
+                    <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-warning">Delete from Watchlist</button>
+                </form>  
+            {% endif %}
+        </div>
 {% endblock %}

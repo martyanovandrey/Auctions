@@ -83,10 +83,15 @@ def listing(request):
 def active_listing(request, listing_id):
     try:
         listing = Listing.objects.get(id=listing_id)
+        curent_user = request.user.id  
+        watchlist_state = True
+        if Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_id).exists():
+            watchlist_state = False
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
     return render(request, "auctions/active_listing.html", {
-        "listing": listing
+        "listing": listing,
+        'watchlist_state': watchlist_state
         })
 
 def watchlist(request):
@@ -100,8 +105,9 @@ def watchlist(request):
         watchlist = Watchlist(user_watchlist=watching_user, listing_item=listing_item)
         # Check if user already have that item in watchlist
         if Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_item).exists():
-            return HttpResponseBadRequest("This item already in your watchlist")
-        watchlist.save()
+            Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_item).delete()
+        else:
+            watchlist.save()
     curent_watch_id = Watchlist.objects.filter(user_watchlist=curent_user)
     curent_watchlist = curent_watch_id.all()
     return render(request, "auctions/watchlist.html", {

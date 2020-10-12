@@ -20,6 +20,9 @@ class Watchlist(models.Model):
     def __str__(self):
         return f"{self.user_watchlist} {self.listing_item}"
 
+    def is_added(self):
+        return
+
 class Comment(models.Model):
     name = models.CharField(max_length=64)
     comment = models.CharField(max_length=1024)
