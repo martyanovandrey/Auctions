@@ -1,26 +1,34 @@
 {% extends "auctions/layout.html" %}
+{% load crispy_forms_tags %}
 
 {% block body %}
-<div class="active_listing">
-    <ul>
-        {{ listing.name}}
-        <li>{{ listing.price }}$</li>
-        <li>{{ listing.description }} </li>
-    </ul>
-
-    <img src="{{ listing.url}}" class="card-img-full" >
+<div class="card-body">
+    <h4> {{ listing.name}} </h4>
+    <p> {{ listing.description }} </p>
+    <img src="{{ listing.url}}" class="card-img-full">
+    <div>
+        {% if watchlist_state %}
+        <form action="{% url 'watchlist' %}" method='post'>
+            {% csrf_token %}
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-success">Add to
+                Watchlist</button>
+        </form>
+        {% else %}
+        <form action="{% url 'watchlist' %}" method='post'>
+            {% csrf_token %}
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-warning">Delete from
+                Watchlist</button>
+        </form>
+        {% endif %}
+    </div>
+    <div class='bid'>
+        <h5>Current max bid: {{ listing.starting_bid }} $</h5>
+        <form action="{% url 'bid' %}" method='post' class='bid'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" name="listing_id" value="bid_form" class="btn btn-success">Make a
+                Bid</button>
+        </form>
+    </div>
 </div>
-        <div>
-            {% if watchlist_state %}
-                <form action="{% url 'watchlist' %}" method = 'post'>
-                    {% csrf_token %}
-                    <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-success">Add to Watchlist</button>
-                </form>   
-            {% else %}
-                <form action="{% url 'watchlist' %}" method = 'post'>
-                    {% csrf_token %}
-                    <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-warning">Delete from Watchlist</button>
-                </form>  
-            {% endif %}
-        </div>
 {% endblock %}

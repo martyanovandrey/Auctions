@@ -3,11 +3,6 @@ body {
 }
 
 
-.active_listing {
-    display: flex;
-    flex-direction: column;
-}
-
 .listing {
     display: flex;
     flex-direction: row;    
@@ -17,5 +12,11 @@ body {
 }
 
 .card-img-full {
-    width: 50vw;
+    width: 30vw;
+    height: 30vw;
+}
+
+.bid {
+    width: 15vw;
+    height: 30vw;
 }

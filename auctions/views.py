@@ -3,9 +3,12 @@ from django.db import IntegrityError
 from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
-from .models import User, Listing, Watchlist
+from .models import User, Listing, Watchlist, Bid
 
+class Bid_form(forms.Form):
+    bid_form = forms.CharField(widget=forms.TextInput(), label='Create your bid')
 
 def index(request):
     all_listings = Listing.objects.all()
@@ -80,6 +83,20 @@ def listing(request):
             })        
     return render(request, "auctions/listing.html")
 
+
+def bid(request):
+    if request.method == 'POST':
+        #Create forms (title, content) from NewContent class
+        form = Bid_form(request.POST)
+        if form.is_valid():
+            bid = form.cleaned_data['bid']  
+            print("aa"*100)
+            print(bid)  
+    return render(request, "auctions/active_listing.html", {
+        'form': Bid_form()
+        })
+
+
 def active_listing(request, listing_id):
     try:
         listing = Listing.objects.get(id=listing_id)
@@ -91,7 +108,8 @@ def active_listing(request, listing_id):
         raise Http404("Listing not found.")
     return render(request, "auctions/active_listing.html", {
         "listing": listing,
-        'watchlist_state': watchlist_state
+        'watchlist_state': watchlist_state,
+        'form': Bid_form()
         })
 
 def watchlist(request):
