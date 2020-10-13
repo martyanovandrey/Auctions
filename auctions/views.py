@@ -4,17 +4,20 @@ from django.http import HttpResponseBadRequest, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from django.db.models import Max
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.exceptions import ValidationError
 
 from .models import User, Listing, Watchlist, Bid
 
 class Bid_form(forms.Form):
-    bid_form = forms.CharField(widget=forms.TextInput(), label='Create your bid')
+    bid_form = forms.IntegerField(required=True, label='Create your bid')
+    bid_form.widget.attrs.update({'class': 'form-control'})
 
 def index(request):
     all_listings = Listing.objects.all()
     return render(request, "auctions/index.html", {
                     "listings": all_listings})
-
 
 def login_view(request):
     if request.method == "POST":
@@ -35,11 +38,9 @@ def login_view(request):
     else:
         return render(request, "auctions/login.html")
 
-
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -70,11 +71,11 @@ def register(request):
 def listing(request):
     if request.method == "POST":
         name = request.POST["name"]
-        price = request.POST["price"]       
+        starting_bid = request.POST["starting_bid"]       
         description = request.POST["description"]
         url = request.POST["url"]
         try:
-            Listings_created = Listing(name=name, price=price, description=description, url=url)
+            Listings_created = Listing(name=name, starting_bid=starting_bid, description=description, url=url)
             Listings_created.save()
             return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
@@ -82,20 +83,6 @@ def listing(request):
                 "message": "Username already taken."
             })        
     return render(request, "auctions/listing.html")
-
-
-def bid(request):
-    if request.method == 'POST':
-        #Create forms (title, content) from NewContent class
-        form = Bid_form(request.POST)
-        if form.is_valid():
-            bid = form.cleaned_data['bid']  
-            print("aa"*100)
-            print(bid)  
-    return render(request, "auctions/active_listing.html", {
-        'form': Bid_form()
-        })
-
 
 def active_listing(request, listing_id):
     try:
@@ -122,8 +109,9 @@ def watchlist(request):
         # Create watchlist
         watchlist = Watchlist(user_watchlist=watching_user, listing_item=listing_item)
         # Check if user already have that item in watchlist
-        if Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_item).exists():
-            Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_item).delete()
+        curent_item = Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_item)
+        if curent_item.exists():
+            curent_item.delete()
         else:
             watchlist.save()
     curent_watch_id = Watchlist.objects.filter(user_watchlist=curent_user)
@@ -131,3 +119,49 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "all_watchlists": curent_watchlist
         })
+
+def bid(request):
+    if request.method == 'POST':
+        #Create form from Bid_form class
+        form = Bid_form(request.POST)
+        curent_user = request.user.id
+        listing_id = request.POST["listing_id"]
+        listing = Listing.objects.get(id=listing_id)
+        listing_item = Listing.objects.get(id = listing_id)
+        user_bid = User.objects.get(id = curent_user)
+        if form.is_valid():
+            curent_bid = form.cleaned_data['bid_form']
+            max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
+            max_bid = max_bid['bid__max']
+            bid_count = Bid.objects.filter(item_bid=listing_id).count()
+            if Bid.objects.filter(item_bid=listing_id).count() > 0:
+                if curent_bid > max_bid: 
+                    bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
+                    bid.save()
+                    return render(request, "auctions/active_listing.html", {
+                        "listing": listing,
+                        'form': Bid_form(),
+                        'max_bid': curent_bid,
+                        'bid_count': bid_count + 1,
+                        "succ_message": f"You made a successful bid for {curent_bid}$ !"
+                        })
+                else:
+                    return render(request, "auctions/active_listing.html", {
+                        "listing": listing,
+                        'form': Bid_form(),
+                        'max_bid': max_bid,
+                        'bid_count': bid_count,                        
+                        "err_message": "Bid can't be less than curent max bid"
+                        })
+            else:
+                bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
+                bid.save()
+                return render(request, "auctions/active_listing.html", {
+                    "listing": listing,
+                    'form': Bid_form(),
+                    'max_bid': curent_bid,
+                    'bid_count': bid_count + 1,                        
+                    "succ_message": f"You made a successful first bid for {curent_bid}$ !"
+                    })
+        else:           
+            return HttpResponseBadRequest("Form is not valid")
