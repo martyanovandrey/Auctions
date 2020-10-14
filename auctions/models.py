@@ -25,9 +25,9 @@ class Bid(models.Model):
     user_bid = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_bid')
     item_bid = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='item_bid')
     bid = models.IntegerField()
-
+  
     def __str__(self):
-        return f"{self.user_bid} {self.item_bid} {self.bid}"    
+        return f"{self.user_bid} {self.item_bid.name} {self.bid}"    
 
 
 class Comment(models.Model):

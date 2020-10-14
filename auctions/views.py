@@ -88,7 +88,6 @@ def active_listing(request, listing_id):
     try:
         listing = Listing.objects.get(id=listing_id)
         curent_user = request.user.id  
-        watchlist_state = True
         bid_count = Bid.objects.filter(item_bid=listing_id).count()
         if bid_count > 0:
             max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
@@ -97,6 +96,8 @@ def active_listing(request, listing_id):
             max_bid = listing.starting_bid
         if Watchlist.objects.filter(user_watchlist = curent_user, listing_item = listing_id).exists():
             watchlist_state = False
+        else:
+            watchlist_state = True
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
     #Make a Bid block
@@ -116,7 +117,7 @@ def active_listing(request, listing_id):
             else:
                 max_bid = listing_item.starting_bid
             if curent_bid > max_bid: 
-                bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
+                bid = Bid(user_bid=user_bid, item_bid_id=listing_item.id, bid=curent_bid)
                 bid.save()
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
@@ -164,4 +165,5 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "all_watchlists": curent_watchlist
         })
-            
+
+#@login_required
