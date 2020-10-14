@@ -6,18 +6,18 @@
     <p> {{ listing.description }} </p>
     <img src="{{ listing.url}}" class="card-img-full">
     <div>
-        {% if not watchlist_state %}
+        {% if watchlist_state %}
         <h1> {{watchlist_state}} </h1>
         <form action="{% url 'watchlist' %}" method='post'>
             {% csrf_token %}
-            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-warning">Delete from
-                Watchlist</button>            
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-success">Add to
+                Watchlist</button>
         </form>
         {% else %}
         <h1> {{watchlist_state}} </h1>
         <form action="{% url 'watchlist' %}" method='post'>
             {% csrf_token %}
-            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-success">Add to
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-warning">Delete from
                 Watchlist</button>
         </form>
         {% endif %}

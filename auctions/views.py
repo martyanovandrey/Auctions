@@ -117,7 +117,7 @@ def active_listing(request, listing_id):
             else:
                 max_bid = listing_item.starting_bid
             if curent_bid > max_bid: 
-                bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
+                bid = Bid(user_bid=user_bid, item_bid_id=listing_item.id, bid=curent_bid)
                 bid.save()
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
@@ -165,3 +165,5 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "all_watchlists": curent_watchlist
         })
+
+#@login_required
