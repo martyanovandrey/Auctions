@@ -23,7 +23,7 @@
     <div>
         <h5>Starting price: {{ listing.starting_bid }} $</h5>
         <h5>There are {{bid_count}} bid(s). Curent max bid: {{ max_bid }} $</h5>
-        <form action="{% url 'bid' %}" method='post' class='bid'>
+        <form action="{% url "active_listing" listing.id %}" method='post' class='bid'>
             {% csrf_token %}
             <div class='form-group'>
                 {{ form }}
