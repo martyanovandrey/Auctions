@@ -68,7 +68,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-def listing(request):
+def create_listing(request):
     if request.method == "POST":
         name = request.POST["name"]
         starting_bid = request.POST["starting_bid"]       
@@ -80,9 +80,9 @@ def listing(request):
             return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
             return render(request, "auctions/register.html", {
-                "message": "Username already taken."
+                "message": "Name already taken."
             })        
-    return render(request, "auctions/listing.html")
+    return render(request, "auctions/create_listing.html")
 
 def active_listing(request, listing_id):
     try:
@@ -134,7 +134,6 @@ def bid(request):
         form = Bid_form(request.POST)
         curent_user = request.user.id
         listing_id = request.POST["listing_id"]
-        listing = Listing.objects.get(id=listing_id)
         listing_item = Listing.objects.get(id = listing_id)
         user_bid = User.objects.get(id = curent_user)
         if form.is_valid():
@@ -144,25 +143,13 @@ def bid(request):
                 max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
                 max_bid = max_bid['bid__max']
             else:
-                max_bid = listing.starting_bid
+                max_bid = listing_item.starting_bid
             if curent_bid > max_bid: 
                 bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
                 bid.save()
-                return render(request, "auctions/active_listing.html", {
-                    "listing": listing,
-                    'form': Bid_form(),
-                    'max_bid': curent_bid,
-                    'bid_count': bid_count + 1,
-                    "succ_message": f"You made a successful bid for {curent_bid}$ !"
-                    })
+                return HttpResponseRedirect(reverse("active_listing", args=(listing_id,)))
             else:
-                return render(request, "auctions/active_listing.html", {
-                    "listing": listing,
-                    'form': Bid_form(),
-                    'max_bid': max_bid,
-                    'bid_count': bid_count,                        
-                    "err_message": "Bid can't be less than curent max bid"
-                    })
-
+                return HttpResponseRedirect(reverse("active_listing", args=(listing_id,)))
         else:           
             return HttpResponseBadRequest("Form is not valid")
+            
