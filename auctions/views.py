@@ -147,9 +147,21 @@ def bid(request):
             if curent_bid > max_bid: 
                 bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
                 bid.save()
-                return HttpResponseRedirect(reverse("active_listing", args=(listing_id,)))
+                return render(request, "auctions/active_listing.html", {
+                    "listing": listing_item,
+                    'form': Bid_form(),
+                    'max_bid': curent_bid,
+                    'bid_count': bid_count + 1,
+                    "succ_message": f"You made a successful bid for {curent_bid}$ !"
+                    })
             else:
-                return HttpResponseRedirect(reverse("active_listing", args=(listing_id,)))
+                return render(request, "auctions/active_listing.html", {
+                    "listing": listing_item,
+                    'form': Bid_form(),
+                    'max_bid': max_bid,
+                    'bid_count': bid_count,                        
+                    "err_message": "Bid can't be less than curent max bid"
+                    })
         else:           
             return HttpResponseBadRequest("Form is not valid")
             

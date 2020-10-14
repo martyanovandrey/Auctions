@@ -4,7 +4,7 @@
 <h2>Active Listings</h2>
 <ul>
     {% for listing in listings %}
-    <div onclick="window.open('{% url "listing" listing.id %}', '_self');" class="card" style="width: 18rem;">
+    <div onclick="window.open('{% url "active_listing" listing.id %}', '_self');" class="card" style="width: 18rem;">
         <div class="card-body">
             <h5 class="card-title">
                 {{ listing.name}}
