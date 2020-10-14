@@ -99,6 +99,43 @@ def active_listing(request, listing_id):
             watchlist_state = False
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
+    #Make a Bid block
+    if request.method == 'POST':
+        #Create form from Bid_form class
+        form = Bid_form(request.POST)
+        curent_user = request.user.id
+        listing_id = request.POST["listing_id"]
+        listing_item = Listing.objects.get(id = listing_id)
+        user_bid = User.objects.get(id = curent_user)
+        if form.is_valid():
+            curent_bid = form.cleaned_data['bid_form']
+            bid_count = Bid.objects.filter(item_bid=listing_id).count()
+            if bid_count > 0:
+                max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
+                max_bid = max_bid['bid__max']
+            else:
+                max_bid = listing_item.starting_bid
+            if curent_bid > max_bid: 
+                bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
+                bid.save()
+                return render(request, "auctions/active_listing.html", {
+                    "listing": listing_item,
+                    'form': Bid_form(),
+                    'max_bid': curent_bid,
+                    'bid_count': bid_count + 1,
+                    "succ_message": f"You made a successful bid for {curent_bid} $ !"
+                    })
+            else:
+                return render(request, "auctions/active_listing.html", {
+                    "listing": listing_item,
+                    'form': Bid_form(),
+                    'max_bid': max_bid,
+                    'bid_count': bid_count,                        
+                    "err_message": "Bid can't be less than curent max bid"
+                    })
+        else:           
+            return HttpResponseBadRequest("Form is not valid")
+    #End bid block
     return render(request, "auctions/active_listing.html", {
         "listing": listing,
         'watchlist_state': watchlist_state,
@@ -127,41 +164,4 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "all_watchlists": curent_watchlist
         })
-
-def bid(request):
-    if request.method == 'POST':
-        #Create form from Bid_form class
-        form = Bid_form(request.POST)
-        curent_user = request.user.id
-        listing_id = request.POST["listing_id"]
-        listing_item = Listing.objects.get(id = listing_id)
-        user_bid = User.objects.get(id = curent_user)
-        if form.is_valid():
-            curent_bid = form.cleaned_data['bid_form']
-            bid_count = Bid.objects.filter(item_bid=listing_id).count()
-            if bid_count > 0:
-                max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
-                max_bid = max_bid['bid__max']
-            else:
-                max_bid = listing_item.starting_bid
-            if curent_bid > max_bid: 
-                bid = Bid(user_bid=user_bid, item_bid=listing_item, bid=curent_bid)
-                bid.save()
-                return render(request, "auctions/active_listing.html", {
-                    "listing": listing_item,
-                    'form': Bid_form(),
-                    'max_bid': curent_bid,
-                    'bid_count': bid_count + 1,
-                    "succ_message": f"You made a successful bid for {curent_bid}$ !"
-                    })
-            else:
-                return render(request, "auctions/active_listing.html", {
-                    "listing": listing_item,
-                    'form': Bid_form(),
-                    'max_bid': max_bid,
-                    'bid_count': bid_count,                        
-                    "err_message": "Bid can't be less than curent max bid"
-                    })
-        else:           
-            return HttpResponseBadRequest("Form is not valid")
             
