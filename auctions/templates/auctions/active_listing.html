@@ -4,23 +4,30 @@
 <div class="card-body">
     <h4> {{ listing.name}} </h4>
     <p> {{ listing.description }} </p>
+    <p> Added by: {{ listing.owner }} </p>
     <img src="{{ listing.url}}" class="card-img-full">
     <div>
         {% if watchlist_state %}
-        <h1> {{watchlist_state}} </h1>
         <form action="{% url 'watchlist' %}" method='post'>
             {% csrf_token %}
             <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-success">Add to
                 Watchlist</button>
         </form>
         {% else %}
-        <h1> {{watchlist_state}} </h1>
         <form action="{% url 'watchlist' %}" method='post'>
             {% csrf_token %}
             <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-warning">Delete from
                 Watchlist</button>
         </form>
         {% endif %}
+        <div>
+        <form action="{% url 'watchlist' %}" method='post'>
+            {% if user.username == listing.owner %}
+                <button type="submit" name="close_bid" value="{{ listing.id }}" class="btn btn-outline-danger">Close bid</button>
+                <input name="owner" type='hidden' value='{{ user.username }}'>
+            {% endif %}
+        </form>
+        </div>
     </div>
     <div>
         <h5>Starting price: {{ listing.starting_bid }} $</h5>

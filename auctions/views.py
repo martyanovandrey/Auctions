@@ -74,13 +74,14 @@ def create_listing(request):
         starting_bid = request.POST["starting_bid"]       
         description = request.POST["description"]
         url = request.POST["url"]
+        owner = request.POST['owner']
         try:
-            Listings_created = Listing(name=name, starting_bid=starting_bid, description=description, url=url)
+            Listings_created = Listing(name=name, starting_bid=starting_bid, description=description, url=url, owner=owner)
             Listings_created.save()
             return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
-            return render(request, "auctions/register.html", {
-                "message": "Name already taken."
+            return render(request, "auctions/create_listing.html", {
+                "message": "Listing not created."
             })        
     return render(request, "auctions/create_listing.html")
 
@@ -167,3 +168,6 @@ def watchlist(request):
         })
 
 #@login_required
+def close_bid(request, listing_id):
+    if request.method == "POST":
+        listing_id = request.POST["listing_id"]

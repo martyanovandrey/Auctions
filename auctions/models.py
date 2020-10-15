@@ -10,9 +10,11 @@ class Listing(models.Model):
     description = models.CharField(max_length=254)
     url = models.CharField(max_length=254)
     date = models.DateTimeField(auto_now_add=True, blank=True)
+    owner = models.CharField(max_length=64)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} {self.starting_bid} {self.description} {self.url} {self.date}"    
+        return f"{self.name} {self.starting_bid}$ {self.owner}"    
 
 class Watchlist(models.Model):
     user_watchlist = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_watchlist')
