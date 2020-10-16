@@ -4,16 +4,18 @@
 <h2>Active Listings</h2>
 <ul>
     {% for listing in listings %}
-    <div onclick="window.open('{% url "active_listing" listing.id %}', '_self');" class="card" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">
-                {{ listing.name}}
-            </h5>
-            <img class="card-img-top" src="{{ listing.url}}">
-            <p class="card-text">Description:{{ listing.description }}</p>
-            <p class="card-text">Starting bid: {{ listing.starting_bid }}$</p>
+        {% if listing.active == True %}
+        <div onclick="window.open('{% url "active_listing" listing.id %}', '_self');" class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ listing.name}}
+                </h5>
+                <img class="card-img-top" src="{{ listing.url}}">
+                <p class="card-text">Description:{{ listing.description }}</p>
+                <p class="card-text">Starting bid: {{ listing.starting_bid }}$</p>
+            </div>
         </div>
-    </div>
+        {% endif %}
     {% endfor %}
 </ul>
 
