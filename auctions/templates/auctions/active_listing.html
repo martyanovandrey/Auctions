@@ -21,10 +21,10 @@
         </form>
         {% endif %}
         <div>
-        <form action="{% url 'watchlist' %}" method='post'>
+        <form action="{% url close_bid %}" method='post'>
+            {% csrf_token %}
             {% if user.username == listing.owner %}
-                <button type="submit" name="close_bid" value="{{ listing.id }}" class="btn btn-outline-danger">Close bid</button>
-                <input name="owner" type='hidden' value='{{ user.username }}'>
+                <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-danger">Close bid</button>
             {% endif %}
         </form>
         </div>

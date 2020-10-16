@@ -171,3 +171,7 @@ def watchlist(request):
 def close_bid(request, listing_id):
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
+        active_listing = Listing.objects.get(id=listing_id)
+        active_listing.active = False
+        active_listing.save()
+        return HttpResponseRedirect(reverse('index'))
