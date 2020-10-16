@@ -167,11 +167,12 @@ def watchlist(request):
         "all_watchlists": curent_watchlist
         })
 
+
 #@login_required
-def close_bid(request, listing_id):
+def close_bid(request):
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
         active_listing = Listing.objects.get(id=listing_id)
         active_listing.active = False
         active_listing.save()
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse("index"))

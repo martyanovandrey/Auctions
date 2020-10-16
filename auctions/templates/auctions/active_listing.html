@@ -21,36 +21,46 @@
         </form>
         {% endif %}
         <div>
-        <form action="{% url close_bid %}" method='post'>
-            {% csrf_token %}
-            {% if user.username == listing.owner %}
+        {% if user.username == listing.owner and listing.active == True %}
+            <form action="{% url 'close_bid' %}" method='post'>
+                {% csrf_token %}
                 <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-danger">Close bid</button>
-            {% endif %}
-        </form>
+            </form>
         </div>
+        {% endif %}
     </div>
-    <div>
-        <h5>Starting price: {{ listing.starting_bid }} $</h5>
-        <h5>There are {{bid_count}} bid(s). Curent max bid: {{ max_bid }} $</h5>
-        <form action="{% url "active_listing" listing.id %}" method='post' class='bid'>
-            {% csrf_token %}
-            <div class='form-group'>
-                {{ form }}
-            </div>
-            {% if err_message %}
-            <div class='alert alert-danger'>
-                {{ err_message }}
-            </div>
-            {% endif %}
-            {% if succ_message %}
-            <div class='alert alert-success'>
-                {{ succ_message }}
-            </div>
-            {% endif %}
-            <button type="submit" name="listing_id" value="bid_form" class="btn btn-success">Make a
-                Bid</button>
-            <input name="listing_id" type='hidden' value='{{ listing.id }}'>
-        </form>
-    </div>
+        {% if listing.active == False %}
+        <div class="alert alert-primary" role="alert">
+            Auction ended !
+        </div>
+        {% elif listing.active == False and user.username == listing.winner %}
+        <div class="alert alert-success" role="alert">
+            Сongratulations, you won auction !
+        </div>
+        {% else %}
+        <div>
+            <h5>Starting price: {{ listing.starting_bid }} $</h5>
+            <h5>There are {{bid_count}} bid(s). Curent max bid: {{ max_bid }} $</h5>
+            <form action="{% url "active_listing" listing.id %}" method='post' class='bid'>
+                {% csrf_token %}
+                <div class='form-group'>
+                    {{ form }}
+                </div>
+                {% if err_message %}
+                <div class='alert alert-danger'>
+                    {{ err_message }}
+                </div>
+                {% endif %}
+                {% if succ_message %}
+                <div class='alert alert-success'>
+                    {{ succ_message }}
+                </div>
+                {% endif %}
+                <button type="submit" name="listing_id" value="bid_form" class="btn btn-success">Make a
+                    Bid</button>
+                <input name="listing_id" type='hidden' value='{{ listing.id }}'>
+            </form>
+        </div>
+        {% endif %}
 </div>
 {% endblock %}

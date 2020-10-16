@@ -12,6 +12,7 @@ class Listing(models.Model):
     date = models.DateTimeField(auto_now_add=True, blank=True)
     owner = models.CharField(max_length=64)
     active = models.BooleanField(default=True)
+    winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner', null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} {self.starting_bid}$ {self.owner}"    
