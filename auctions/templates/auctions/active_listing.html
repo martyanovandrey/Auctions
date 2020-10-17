@@ -5,6 +5,7 @@
     <h4> {{ listing.name}} </h4>
     <p> {{ listing.description }} </p>
     <p> Added by: {{ listing.owner }} </p>
+    <p> Date: {{ listing.date }} </p>
     <img src="{{ listing.url}}" class="card-img-full">
     <div>
         {% if watchlist_state %}
@@ -21,46 +22,53 @@
         </form>
         {% endif %}
         <div>
-        {% if user.username == listing.owner and listing.active == True %}
+            {% if user.username == listing.owner and listing.active == True %}
             <form action="{% url 'close_bid' %}" method='post'>
                 {% csrf_token %}
-                <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-danger">Close bid</button>
+                <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-danger">Close
+                    bid</button>
             </form>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-        {% if listing.active == False %}
-        <div class="alert alert-primary" role="alert">
-            Auction ended !
-        </div>
-        {% elif listing.active == False and user.username == listing.winner %}
-        <div class="alert alert-success" role="alert">
-            Сongratulations, you won auction !
-        </div>
-        {% else %}
-        <div>
-            <h5>Starting price: {{ listing.starting_bid }} $</h5>
-            <h5>There are {{bid_count}} bid(s). Curent max bid: {{ max_bid }} $</h5>
-            <form action="{% url "active_listing" listing.id %}" method='post' class='bid'>
-                {% csrf_token %}
-                <div class='form-group'>
-                    {{ form }}
-                </div>
-                {% if err_message %}
-                <div class='alert alert-danger'>
-                    {{ err_message }}
-                </div>
-                {% endif %}
-                {% if succ_message %}
-                <div class='alert alert-success'>
-                    {{ succ_message }}
-                </div>
-                {% endif %}
-                <button type="submit" name="listing_id" value="bid_form" class="btn btn-success">Make a
-                    Bid</button>
-                <input name="listing_id" type='hidden' value='{{ listing.id }}'>
-            </form>
-        </div>
-        {% endif %}
+    {% if listing.active == False and user.username|stringformat:"s" == listing.winner|stringformat:"s" %}
+    <div class="alert alert-success" role="alert">
+        Сongratulations, you won auction !
+    </div>
+    {% elif listing.active == False %}
+    <div class="alert alert-primary" role="alert">
+        Auction ended ! Sorry, you didn't win.
+    </div>
+    {% else %}
+    <div>
+        <h5>Starting price: {{ listing.starting_bid }} $</h5>
+        <h5>There are {{bid_count}} bid(s). Curent max bid: {{ max_bid }} $</h5>
+        <form action="{% url "active_listing" listing.id %}" method='post' class='bid'>
+            {% csrf_token %}
+            <div class='form-group'>
+                {{ form }}
+            </div>
+            {% if err_message %}
+            <div class='alert alert-danger'>
+                {{ err_message }}
+            </div>
+            {% endif %}
+            {% if succ_message %}
+            <div class='alert alert-success'>
+                {{ succ_message }}
+            </div>
+            {% endif %}
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-success">Make a
+                Bid</button>
+        </form>
+    </div>
+    {% endif %}
+    <div>
+        <form action="{% url 'comment' %}" method='post'>
+            {% csrf_token %}
+            {{comment_form}}
+            <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-primary">Post Comment</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

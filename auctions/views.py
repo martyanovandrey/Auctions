@@ -7,12 +7,21 @@ from django import forms
 from django.db.models import Max
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 
-from .models import User, Listing, Watchlist, Bid
+from .models import User, Listing, Watchlist, Bid, Comment
 
 class Bid_form(forms.Form):
     bid_form = forms.IntegerField(required=True, label='Create your bid')
     bid_form.widget.attrs.update({'class': 'form-control'})
+
+class Comment_form(forms.Form):
+    comment = forms.CharField(widget=forms.Textarea(), label='Leave a comment')
+    comment.widget.attrs.update({
+        'class': 'form-control',
+        'rows': '3'
+    })
+    
 
 def index(request):
     all_listings = Listing.objects.all()
@@ -68,6 +77,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+@login_required
 def create_listing(request):
     if request.method == "POST":
         name = request.POST["name"]
@@ -84,6 +94,7 @@ def create_listing(request):
                 "message": "Listing not created."
             })        
     return render(request, "auctions/create_listing.html")
+
 
 def active_listing(request, listing_id):
     try:
@@ -103,7 +114,6 @@ def active_listing(request, listing_id):
         raise Http404("Listing not found.")
     #Make a Bid block
     if request.method == 'POST':
-        #Create form from Bid_form class
         form = Bid_form(request.POST)
         curent_user = request.user.id
         listing_id = request.POST["listing_id"]
@@ -122,17 +132,19 @@ def active_listing(request, listing_id):
                 bid.save()
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
-                    'form': Bid_form(),
                     'max_bid': curent_bid,
                     'bid_count': bid_count + 1,
+                    'form': Bid_form(),
+                    'comment_form': Comment_form(),
                     "succ_message": f"You made a successful bid for {curent_bid} $ !"
                     })
             else:
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
-                    'form': Bid_form(),
                     'max_bid': max_bid,
                     'bid_count': bid_count,                        
+                    'form': Bid_form(),
+                    'comment_form': Comment_form(),
                     "err_message": "Bid can't be less than curent max bid"
                     })
         else:           
@@ -143,9 +155,11 @@ def active_listing(request, listing_id):
         'watchlist_state': watchlist_state,
         'bid_count': bid_count,
         'max_bid': max_bid,
-        'form': Bid_form()
+        'form': Bid_form(),
+        'comment_form': Comment_form()
         })
 
+@login_required
 def watchlist(request):
     curent_user = request.user.id      
     if request.method == "POST":
@@ -168,11 +182,36 @@ def watchlist(request):
         })
 
 
-#@login_required
+@login_required
 def close_bid(request):
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
         active_listing = Listing.objects.get(id=listing_id)
         active_listing.active = False
+        bid_count = Bid.objects.filter(item_bid=listing_id).count()
+        if bid_count > 0:
+            max_bid = Bid.objects.filter(item_bid=listing_id).aggregate(Max('bid'))
+            max_bid = max_bid['bid__max']
+            bid_winner = Bid.objects.get(item_bid=listing_id, bid=max_bid)
+            active_listing.winner = bid_winner.user_bid
+        else:
+            active_listing.winner = None
         active_listing.save()
         return HttpResponseRedirect(reverse("index"))
+
+@login_required
+def comment(request):
+    curent_user = request.user.id
+    curent_user = User.objects.get(id = curent_user)
+    comment_form = Comment_form(request.POST)  
+    if request.method == "POST":
+        listing_id = request.POST["listing_id"]
+        listing_item = Listing.objects.get(id = listing_id)
+        if comment_form.is_valid():
+            curent_comment = comment_form.cleaned_data['comment']
+            create_comment = Comment(user_comment=curent_user, listing_comment=listing_item, comment=curent_comment)
+            create_comment.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            raise forms.ValidationError(comment_form.errors)
+
