@@ -25,7 +25,10 @@ class Comment_form(forms.Form):
 
 def index(request):
     all_listings = Listing.objects.all()
+    #Get unique values from category query
+    all_categories = Listing.objects.values('category').distinct().exclude(category__exact='')
     return render(request, "auctions/index.html", {
+                    "all_categories": all_categories,     
                     "listings": all_listings})
 
 def login_view(request):
@@ -81,12 +84,13 @@ def register(request):
 def create_listing(request):
     if request.method == "POST":
         name = request.POST["name"]
+        category = request.POST['category']
         starting_bid = request.POST["starting_bid"]       
         description = request.POST["description"]
         url = request.POST["url"]
         owner = request.POST['owner']
         try:
-            Listings_created = Listing(name=name, starting_bid=starting_bid, description=description, url=url, owner=owner)
+            Listings_created = Listing(name=name, category=category, starting_bid=starting_bid, description=description, url=url, owner=owner)
             Listings_created.save()
             return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
@@ -222,3 +226,9 @@ def comment(request):
         else:
             raise forms.ValidationError(comment_form.errors)
 
+def category(request, category):
+    listing_category = Listing.objects.filter(category=category)
+    return render(request, "auctions/category.html", {
+        'category': category,
+        'listing_category': listing_category
+    })

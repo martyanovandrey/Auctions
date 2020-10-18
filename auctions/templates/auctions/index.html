@@ -2,6 +2,10 @@
 
 {% block body %}
 <h2>Active Listings</h2>
+<h5> Categories </h5>
+    {% for category in all_categories %}
+        <a href="category/{{category.category}}" class="badge badge-primary"> {{category.category}} </a>
+    {% endfor %}
 <ul>
     {% for listing in listings %}
         {% if listing.active == True %}
@@ -11,7 +15,7 @@
                     {{ listing.name}}
                 </h5>
                 <img class="card-img-top" src="{{ listing.url}}">
-                <p class="card-text">Description:{{ listing.description }}</p>
+                <p class="card-text">Description: {{ listing.description }}</p>
                 <p class="card-text">Starting bid: {{ listing.starting_bid }}$</p>
             </div>
         </div>
