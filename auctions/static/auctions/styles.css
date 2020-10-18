@@ -11,7 +11,7 @@ body {
     cursor: pointer;
 }
 
-.active_listing_img {
-    width: 25%;
-    height: 25%;
+.card {
+    width: 35%;
 }
+
