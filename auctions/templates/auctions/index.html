@@ -16,6 +16,9 @@
                     <h5 class="card-title">
                         {{ listing.name}}
                     </h5>
+                    {% if listing.category %}
+                        <a href="category/{{listing.category}}" class="badge badge-primary"> {{listing.category}} </a>
+                    {% endif %}
                     <img class="card-img-top" src="{{ listing.url}}">
                     <p class="card-text">Description: {{ listing.description }}</p>
                     <p class="card-text">Starting bid: {{ listing.starting_bid }}$</p>

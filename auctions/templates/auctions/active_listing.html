@@ -28,7 +28,7 @@
                 </form>
                 {% endif %}
                 <div>
-                    {% if user.username == listing.owner and listing.active == True %}
+                    {% if user.username|stringformat:"s" == listing.owner|stringformat:"s" and listing.active == True %}
                     <form action="{% url 'close_bid' %}" method='post'>
                         {% csrf_token %}
                         <button type="submit" name="listing_id" value="{{ listing.id }}" class="btn btn-outline-danger">Close
@@ -43,7 +43,7 @@
             </div>
             {% elif listing.active == False %}
             <div class="alert alert-primary" role="alert">
-                Auction ended ! Sorry, you didn't win.
+                Auction ended !
             </div>
             {% else %}
             <div style='margin: 30px 0px 0px'>
@@ -80,7 +80,7 @@
                     {% endfor %}
                 </ul>
                 <div>
-                    <form action="{% url 'comment' %}" method='post'>
+                    <form action="{% url "comment" %}" method='post'>
                         {% csrf_token %}
                         <div style='margin: 0px 0px 8px'>
                             {{comment_form}}

@@ -89,8 +89,9 @@ def create_listing(request):
         description = request.POST["description"]
         url = request.POST["url"]
         owner = request.POST['owner']
+        user_owner = User.objects.get(username=owner)
         try:
-            Listings_created = Listing(name=name, category=category, starting_bid=starting_bid, description=description, url=url, owner=owner)
+            Listings_created = Listing(name=name, category=category, starting_bid=starting_bid, description=description, url=url, owner=user_owner)
             Listings_created.save()
             return HttpResponseRedirect(reverse("index"))
         except IntegrityError:
@@ -214,7 +215,7 @@ def close_bid(request):
 def comment(request):
     curent_user = request.user.id
     curent_user = User.objects.get(id = curent_user)
-    comment_form = Comment_form(request.POST)  
+    comment_form = Comment_form(request.POST)
     if request.method == "POST":
         listing_id = request.POST["listing_id"]
         listing_item = Listing.objects.get(id = listing_id)
@@ -222,7 +223,7 @@ def comment(request):
             curent_comment = comment_form.cleaned_data['comment']
             create_comment = Comment(user_comment=curent_user, listing_comment=listing_item, comment=curent_comment)
             create_comment.save()
-            return HttpResponseRedirect(reverse('active_listing', args=(listing_id)))
+            return HttpResponseRedirect(reverse('active_listing', args=(listing_id,)))
         else:
             raise forms.ValidationError(comment_form.errors)
 
