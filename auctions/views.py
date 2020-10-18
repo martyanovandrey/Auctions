@@ -112,6 +112,9 @@ def active_listing(request, listing_id):
             watchlist_state = True
     except Listing.DoesNotExist:
         raise Http404("Listing not found.")
+    #All comments
+    # Get comments for this listing item
+    comments = Comment.objects.filter(listing_comment = listing_id)
     #Make a Bid block
     if request.method == 'POST':
         form = Bid_form(request.POST)
@@ -132,6 +135,7 @@ def active_listing(request, listing_id):
                 bid.save()
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
+                    'comments': comments,
                     'max_bid': curent_bid,
                     'bid_count': bid_count + 1,
                     'form': Bid_form(),
@@ -141,6 +145,7 @@ def active_listing(request, listing_id):
             else:
                 return render(request, "auctions/active_listing.html", {
                     "listing": listing_item,
+                    'comments': comments,
                     'max_bid': max_bid,
                     'bid_count': bid_count,                        
                     'form': Bid_form(),
@@ -152,6 +157,7 @@ def active_listing(request, listing_id):
     #End bid block
     return render(request, "auctions/active_listing.html", {
         "listing": listing,
+        'comments': comments,
         'watchlist_state': watchlist_state,
         'bid_count': bid_count,
         'max_bid': max_bid,
@@ -197,7 +203,8 @@ def close_bid(request):
         else:
             active_listing.winner = None
         active_listing.save()
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse('index'))
+
 
 @login_required
 def comment(request):
@@ -211,7 +218,7 @@ def comment(request):
             curent_comment = comment_form.cleaned_data['comment']
             create_comment = Comment(user_comment=curent_user, listing_comment=listing_item, comment=curent_comment)
             create_comment.save()
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse('active_listing', args=(listing_id)))
         else:
             raise forms.ValidationError(comment_form.errors)
 

@@ -40,4 +40,4 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True, blank=True)   
 
     def __str__(self):
-        return f"{self.user_comment} {self.comment}"      
+        return f"{self.user_comment} {self.listing_comment.name} {self.comment}"      
