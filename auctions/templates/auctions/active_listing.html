@@ -4,12 +4,12 @@
 <div class="card-body">
     <h4> {{ listing.name}} </h4>
     {% if listing.category %}
-        <a href="category/{{category.category}}" class="badge badge-primary"> {{listing.category}} </a>
+        <a href="category/{{listing.category}}" class="badge badge-primary"> {{listing.category}} </a>
     {% endif %}
     <p> {{ listing.description }} </p>
     <p> Added by: {{ listing.owner }} </p>
     <p> Date: {{ listing.date }} </p>
-    <img src="{{ listing.url}}" class="card-img-full">
+    <img class='active_listing_img' src="{{ listing.url}}" class="card-img-full">
     {% if user.is_authenticated %}
         <div>
             {% if watchlist_state %}

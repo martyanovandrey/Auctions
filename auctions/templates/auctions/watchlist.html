@@ -4,8 +4,7 @@
 <h1> My Watchlist</h1>
 <ul>
     {% for listing in all_watchlists %}
-        <div onclick="window.open('{% url "active_listing" listing.listing_item.id '_self');" class="card" style="width: 18rem;">
-            <div class="card-body">
+        <div onclick="window.open('{% url "active_listing" listing.listing_item.id %}', '_self');" class="card" style="width: 18rem;">            <div class="card-body">
                 <h5 class="card-title">
                     {{ listing.listing_item.name}}
                 </h5>
