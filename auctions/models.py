@@ -8,6 +8,7 @@ class Listing(models.Model):
     name = models.CharField(max_length=64)
     starting_bid = models.IntegerField()
     description = models.CharField(max_length=254)
+    category = models.CharField(max_length=64, blank=True)
     url = models.CharField(max_length=254)
     date = models.DateTimeField(auto_now_add=True, blank=True)
     owner = models.CharField(max_length=64)
