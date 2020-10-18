@@ -63,6 +63,15 @@
         </form>
     </div>
     {% endif %}
+    <h5>Comments:</h5>
+    <ul class="list-group">
+        {% for comment in comments %}
+            <li class="list-group-item">
+            <div style='font-weight: bold'> {{comment.user_comment}} </div>
+            <div> {{comment.comment}} </div>  
+            </li>
+        {% endfor %}
+    </ul>
     <div>
         <form action="{% url 'comment' %}" method='post'>
             {% csrf_token %}
