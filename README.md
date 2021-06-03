@@ -1,9 +1,9 @@
+[![video](https://user-images.githubusercontent.com/37772440/120628386-4ef39e00-c46d-11eb-8a85-c31af12f94a9.png)](http://www.youtube.com/watch?v=OZvU2dV4R8s)
+  ___
+
 # Auctions
 
-Project made as part of [CS50’s Web Programming with Python and JavaScript](https://www.edx.org/course/cs50s-web-programming-with-python-and-javascript) course by Brian Yu & David J. Malan.
-
-
-
+Project made as part of [HarvardX CS50’s Web Programming with Python and JavaScript](https://www.edx.org/course/cs50s-web-programming-with-python-and-javascript) course by Brian Yu & David J. Malan.
 
 
 # Specification
@@ -23,5 +23,3 @@ Auction site must fulfill the following requirements:
 - **Categories:** Users should be able to visit a page that displays a list of all listing categories. Clicking on the name of any category should take the user to a page that displays all of the active listings in that category.
 - **Django Admin Interface:** Via the Django admin interface, a site administrator should be able to view, add, edit, and delete any listings, comments, and bids made on the site.
 
-___
-  [Live demo](https://youtu.be/OZvU2dV4R8s)
